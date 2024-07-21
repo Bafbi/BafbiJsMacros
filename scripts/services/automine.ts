@@ -1,3 +1,5 @@
+{
+
 let afk_pos: BlockPosHelper | null = null;
 let afk_view: [number, number] | null = null;
 let is_attacking = false;
@@ -9,7 +11,7 @@ const tick_listener = JsMacros.on(
     const player = Player.getPlayer();
     const pos = player.getBlockPos();
     const view = [player.getYaw(), player.getPitch()] as [number, number];
-    if (!pos.equals(afk_pos) || isViewChanged(view)) {
+    if (!pos.equals(afk_pos) || isViewChanged(view, afk_view)) {
       Chat.log("moved");
       afk_pos = null;
       KeyBind.keyBind("key.attack", false);
@@ -25,12 +27,7 @@ const tick_listener = JsMacros.on(
   }),
 );
 
-function isViewChanged(view: [number, number]): boolean {
-  // within 5 degrees
-  return (
-    Math.abs(view[0] - afk_view[0]) > 5 || Math.abs(view[1] - afk_view[1]) > 5
-  );
-}
+
 
 const automine_command = Chat.getCommandManager()
   .createCommandBuilder("automine")
@@ -51,3 +48,11 @@ automine_command.register();
   JsMacros.off(tick_listener);
   automine_command.unregister();
 });
+}
+
+export function isViewChanged(view: [number, number], other: [number, number]): boolean {
+  // within 5 degrees
+  return (
+    Math.abs(view[0] - other[0]) > 5 || Math.abs(view[1] - other[1]) > 5
+  );
+}
