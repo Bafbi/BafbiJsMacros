@@ -19,7 +19,8 @@
   function isGrimoire(item: ItemStackHelper): boolean {
     return (
       item.getItemId() === "minecraft:raw_iron" &&
-      item.getNBT().asCompoundHelper().get("ClueScrolls.uuid") !== null
+      item.getNBT().asCompoundHelper().get(`ClueScrolls.clues.0.clueType`) !==
+        null
     );
   }
 
@@ -202,9 +203,25 @@
     filter: string,
   ): { grimoire: Grimoire; slot: number }[] {
     const filters = filter.split(" ");
+
+    /*
+    Filters:
+      - type:taskType (t:taskType) (#taskType) [only tasks with this type]
+      - material:materialType (m:materialType) (@materialType) [only tasks with this material]
+      - |materialType (,materialType) [only tasks with this material (exact match)]
+      - ~ [only the next task of each grimoire]
+      - ! [only one grimoire for each material]
+    */
+
     const typeFilters = filters
       .filter(
         (f) => f.startsWith("type:") || f.startsWith("t:") || f.startsWith("#"),
+      )
+      .map((f) => f.split(":")[1] || f.split("#")[1]);
+    const antiTypeFilters = filters
+      .filter(
+        (f) =>
+          f.startsWith("!type:") || f.startsWith("!t:") || f.startsWith("!#"),
       )
       .map((f) => f.split(":")[1] || f.split("#")[1]);
     const materialFilters = filters
@@ -213,39 +230,120 @@
           f.startsWith("material:") || f.startsWith("m:") || f.startsWith("@"),
       )
       .map((f) => f.split(":")[1] || f.split("@")[1]);
+    const antiMaterialFilters = filters
+      .filter(
+        (f) =>
+          f.startsWith("!material:") ||
+          f.startsWith("!m:") ||
+          f.startsWith("!@"),
+      )
+      .map((f) => f.split(":")[1] || f.split("@")[1]);
+    const exactMaterialFilters = filters
+      .filter((f) => f.startsWith("|"))
+      .map((f) => f.split("|")[1]);
+    const nextTaskFilters: boolean = filters.includes("~");
+    const onePerMaterial: boolean = filters.includes("!");
 
     // Chat.log("Type filters: " + typeFilters);
     // Chat.log("Material filters: " + materialFilters);
+    // Chat.log(
+    //   `Filters: ${filters} | ${typeFilters} | ${antiTypeFilters} | ${materialFilters} | ${antiMaterialFilters} | ${nextTaskFilters}`,
+    // );
+
+    const findedMaterials: string[] = [];
 
     const filteredGrimoires = grimoires.filter((g) => {
       if (typeFilters.length > 0) {
         const taskTypes = g.grimoire.tasks.map((t) => t.type);
         let typeMatch = false;
         typeFilters.forEach((f) => {
-          taskTypes.forEach((t) => {
-            if (typeMatch === true) return;
-            // Chat.log(`Checking: ${t} against ${f} : ${t.includes(f)}`);
-            typeMatch = t.includes(f);
-          });
+          if (nextTaskFilters) {
+            const nextTask = g.grimoire.tasks.filter(
+              (t) => t.amount !== t.completed,
+            )[0];
+            if (nextTask.type.includes(f) && !antiTypeFilters.includes(f))
+              typeMatch = true;
+          } else {
+            taskTypes.forEach((t) => {
+              if (typeMatch === true) return;
+              // Chat.log(`Checking: ${t} against ${f} : ${t.includes(f)}`);
+              if (t.includes(f) && !antiTypeFilters.includes(f))
+                typeMatch = true;
+            });
+          }
         });
         if (!typeMatch) return false;
       }
+
       if (materialFilters.length > 0) {
         const taskMaterials = g.grimoire.tasks.map((t) => t.material);
         let materialMatch = false;
         materialFilters.forEach((f) => {
-          taskMaterials.forEach((t) => {
-            if (materialMatch === true) return;
-            // Chat.log("Checking: " + t + " against " + f);
-            materialMatch = t.includes(f);
-          });
+          if (nextTaskFilters) {
+            const nextTask = g.grimoire.tasks.filter(
+              (t) => t.amount !== t.completed,
+            )[0];
+            if (
+              nextTask.material.includes(f) &&
+              !antiMaterialFilters.includes(f)
+            ) {
+              materialMatch = true;
+            }
+          } else {
+            taskMaterials.forEach((t) => {
+              if (materialMatch === true) return;
+              // Chat.log("Checking: " + t + " against " + f);
+              if (t.includes(f) && !antiMaterialFilters.includes(f))
+                materialMatch = true;
+            });
+          }
         });
         if (!materialMatch) return false;
+      }
+      if (exactMaterialFilters.length > 0) {
+        const taskMaterials = g.grimoire.tasks.map((t) => t.material);
+        let exactMaterialMatch = false;
+        exactMaterialFilters.forEach((f) => {
+          if (nextTaskFilters) {
+            const nextTask = g.grimoire.tasks.filter(
+              (t) => t.amount !== t.completed,
+            )[0];
+
+            if (nextTask.material === f) {
+              if (onePerMaterial && findedMaterials.includes(nextTask.material))
+                return;
+              exactMaterialMatch = true;
+              findedMaterials.push(nextTask.material);
+            }
+          } else {
+            taskMaterials.forEach((t) => {
+              if (exactMaterialMatch === true) return;
+              if (t === f) exactMaterialMatch = true;
+            });
+          }
+        });
+        if (!exactMaterialMatch) return false;
       }
       return true;
     });
     return filteredGrimoires;
   }
+
+  const toggleMaps = [["container"], ["main", "hotbar"]];
+  const predefinedFilters = {
+    next: "~",
+    passif: "#kill @pig @sheep @cow @chicken",
+    spawner:
+      "~ #kill |pig |sheep |cow |chicken |zombie |skeleton |enderman |blaze |wolf |witch |stray |zombified_piglin |creeper",
+    spawnerOne:
+      " ! ~ #kill |pig |sheep |cow |chicken |zombie |skeleton |enderman |blaze |wolf |witch |stray |zombified_piglin |creeper",
+    nonospawner: "~ #kill |phantom |iron_golem |spider |squid",
+    mine: "~ #break |stone |coal_ore |iron_ore |gold_ore |diamond_ore |emerald_ore |redstone_ore |lapis_ore |nether_gold_ore |nether_quartz_ore |ancient_debris",
+    farm: "~ #break @wheat @carrot @potato @beetroot @melon @pumpkin @cane",
+    craft: "#craft",
+    leather: "~ #craft @leather",
+    wood: "~ #craft @wooden",
+  };
 
   const openContainerListener = JsMacros.on(
     "OpenContainer",
@@ -255,8 +353,9 @@
       const inventory = event.inventory;
       const screen = event.screen;
 
+      if (inventory === null || screen === null) return;
+
       // Chat.log("Inventory: " + inventory.getMap());
-      const toggleMaps = [["container"], ["main", "hotbar"]];
       let toggleIndex = 0;
 
       let grimoiresData: { grimoire: Grimoire; slot: number }[] =
@@ -271,20 +370,66 @@
       const materialD2D = Hud.createDraw2D();
       screen.addDraw2D(materialD2D, 394, 162, 100, 100);
 
-      // screen.setOnKeyPressed(
-      //   JavaWrapper.methodToJava((key) => {
-      //     Chat.log("Key: " + key);
-      //     if (key === 69) return;
-      //   }),
-      // );
-      //
+      screen.setOnKeyPressed(
+        JavaWrapper.methodToJava((key) => {
+          // Chat.log("Key: " + key);
+          if (key === 32) {
+            filterInput.setText(GlobalVars.getString("grimoireFilters" ?? ""));
+          }
+          if (key === 67) {
+            // copy filters from item under cursor
+            const item = inventory.getSlot(inventory.getSlotUnderMouse());
+            if (isGrimoire(item)) {
+              const grimoire = parseGrimoire(item);
+              const nextMaterial = grimoire.tasks.filter(
+                (t) => t.amount !== t.completed,
+              )[0].material;
+              const filterString = `~ |${nextMaterial}`;
+              filterInput.setText(filterString);
+            }
+          }
+          if (key === 86) {
+            // copy filters from item under cursor
+            const item = inventory.getSlot(inventory.getSlotUnderMouse());
+            if (isGrimoire(item)) {
+              const grimoire = parseGrimoire(item);
+              const nextMaterial = grimoire.tasks.filter(
+                (t) => t.amount !== t.completed,
+              )[0].material;
+              const filterString = `~ |${nextMaterial}`;
+              filterInput.setText(filterString);
+
+              toggleIndex = (toggleIndex += 1) % toggleMaps.length;
+              // Chat.log("Toggle: " + toggleIndex);
+              reloadGrimoires();
+              toggleInventoryButton.setLabel(
+                `Toggle ${toggleMaps[(toggleIndex + 1) % toggleMaps.length]}`,
+              );
+              filteredGrimoires.forEach((g) => {
+                inventory.quick(g.slot);
+              });
+              reloadGrimoires();
+            }
+          }
+          if (key === 70) {
+            // last filter + quick
+            const filterString = GlobalVars.getString("grimoireFilters" ?? "");
+            filterInput.setText(filterString);
+            reloadGrimoires();
+            filteredGrimoires.forEach((g) => {
+              inventory.quick(g.slot);
+            });
+            reloadGrimoires();
+          }
+        }),
+      );
 
       const filterInput = screen.addTextInput(
-        screen.getWidth() - 100,
+        screen.getWidth() - 220,
         10,
-        90,
+        200,
         20,
-        "aa",
+        "Filter",
         JavaWrapper.methodToJava((text) => {
           GlobalVars.putString("grimoireFilters", text);
 
@@ -293,6 +438,7 @@
           renderGrimoires(grimoiresD2D, filteredGrimoires);
         }),
       );
+      filterInput.setMaxLength(200);
 
       const takeAllButton = screen.addButton(
         screen.getWidth() - 100,
@@ -324,6 +470,46 @@
         }),
       );
 
+      screen.addButton(
+        screen.getWidth() - 100,
+        100,
+        90,
+        20,
+        "Last filters",
+        JavaWrapper.methodToJava(() => {
+          filterInput.setText(GlobalVars.getString("grimoireFilters" ?? ""));
+          reloadGrimoires();
+        }),
+      );
+
+      // screen.addCheckbox(x, y, width, height, text, checked, showMessage, callback)
+      let i = 0;
+      Object.keys(predefinedFilters).forEach((k) => {
+        const f = predefinedFilters[k];
+        screen.addCheckbox(
+          screen.getWidth() - 100,
+          130 + i * 30,
+          90,
+          20,
+          k,
+          false,
+          true,
+          JavaWrapper.methodToJava((c) => {
+            const checked = c.isChecked();
+            if (checked)
+              filterInput.setText(
+                filterInput.getText() + " " + predefinedFilters[k],
+              );
+            else
+              filterInput.setText(
+                filterInput.getText().replace(predefinedFilters[k], ""),
+              );
+            reloadGrimoires();
+          }),
+        );
+        i++;
+      });
+
       function reloadGrimoires() {
         grimoiresData = fetchGrimoires(inventory, toggleMaps[toggleIndex]);
         filteredGrimoires = filterGrimoires(
@@ -340,6 +526,8 @@
       // filterInput.setText(GlobalVars.getString("grimoireFilters" ?? ""), true);
       //
       //
+      // Client.waitTick(5);
+      // filterInput.setText("aa");
       reloadGrimoires();
     }),
   );
