@@ -17,6 +17,7 @@
     command: string;
   }
 
+  // @ts-ignore
   function isGrimoire(item: ItemStackHelper): boolean {
     return (
       item.getItemId() === "minecraft:raw_iron" &&
@@ -25,81 +26,70 @@
     );
   }
 
+  // @ts-ignore
   function parseGrimoire(item: ItemStackHelper): Grimoire {
-    const uuid = item
-      .getNBT()
-      .asCompoundHelper()
-      .get("ClueScrolls.uuid")
-      .asString();
-    const tier = item
-      .getNBT()
-      .asCompoundHelper()
-      .get("ClueScrolls.tier")
-      .asString();
-    const tasks = [];
+    const helper = item.getNBT().asCompoundHelper();
+
+    const uuid = helper.get("ClueScrolls.uuid")?.asString?.() ?? "";
+    const tier = helper.get("ClueScrolls.tier")?.asString?.() ?? "";
+
+    const tasks: Grimoire["tasks"] = [];
+
     for (let i = 0; i < 5; i++) {
-      if (
-        item
-          .getNBT()
-          .asCompoundHelper()
-          .get(`ClueScrolls.clues.${i}.clueType`) === null
-      )
+      const cluePath = `ClueScrolls.clues.${i}.clueType`;
+      const clueTypeRaw = helper.get(cluePath);
+      if (clueTypeRaw === null || typeof clueTypeRaw?.asString !== "function")
         break;
-      const taskType: string = item
-        .getNBT()
-        .asCompoundHelper()
-        .get(`ClueScrolls.clues.${i}.clueType`)
-        .asString();
-      let taskMaterial: string;
+
+      const taskType = clueTypeRaw.asString();
+      let taskMaterialRaw: any;
+
       switch (taskType) {
         case "kill":
-          taskMaterial = item
-            .getNBT()
-            .asCompoundHelper()
-            .get(`ClueScrolls.clues.${i}.data.entitytype`)
-            .asString();
+          taskMaterialRaw = helper.get(
+            `ClueScrolls.clues.${i}.data.entitytype`,
+          );
           break;
         default:
-          taskMaterial = item
-            .getNBT()
-            .asCompoundHelper()
-            .get(`ClueScrolls.clues.${i}.data.material`)
-            .asString();
+          taskMaterialRaw = helper.get(`ClueScrolls.clues.${i}.data.material`);
           break;
       }
+
+      let taskMaterial = taskMaterialRaw?.asString?.() ?? "";
       taskMaterial = taskMaterial.replace('["', "").replace('"]', "");
 
-      const taskAmount: number = item
-        .getNBT()
-        .asCompoundHelper()
-        .get(`ClueScrolls.clues.${i}.amount`)
-        .asNumberHelper()
-        .asDouble();
-      const taskCompleted = item
-        .getNBT()
-        .asCompoundHelper()
-        .get(`ClueScrolls.clues.${i}.completed`)
-        .asNumberHelper()
-        .asDouble();
+      const amount =
+        helper
+          .get(`ClueScrolls.clues.${i}.amount`)
+          ?.asNumberHelper?.()
+          ?.asDouble?.() ?? 0;
+      const completed =
+        helper
+          .get(`ClueScrolls.clues.${i}.completed`)
+          ?.asNumberHelper?.()
+          ?.asDouble?.() ?? 0;
+
       tasks.push({
         type: taskType,
         material: taskMaterial,
-        amount: taskAmount,
-        completed: taskCompleted,
+        amount,
+        completed,
       });
     }
+
     return {
-      uuid: uuid,
-      tier: tier,
-      tasks: tasks,
-    };
+      uuid,
+      tier,
+      tasks,
+    } as Grimoire;
   }
 
+  // @ts-ignore
   function fetchGrimoires(
     inventory: Inventory,
     mapIds: string[],
   ): { grimoire: Grimoire; slot: number }[] {
-    const grimoiresData: { grimoire: Grimoire; slot: number }[] = [];
+    const grimoiresData: { grimoire; slot: number }[] = [];
 
     mapIds.forEach((mapId) => {
       inventory.getMap()[mapId]?.forEach((s) => {
@@ -108,14 +98,14 @@
         if (!isGrimoire(item)) return;
         const grimoire = parseGrimoire(item);
         // Chat.log("Grimoire: " + grimoire.uuid);
-        grimoiresData.push({ grimoire: grimoire, slot: s });
+        grimoiresData.push({ grimoire, slot: s });
       });
     });
 
     return grimoiresData;
   }
 
-  let lastTickGrimoiresInventory: { grimoire: Grimoire; slot: number }[] = [];
+  let lastTickGrimoiresInventory: { grimoire; slot: number }[] = [];
   let lastRemovedGrimoire: Grimoire | null = null;
 
   const tickListener = JsMacros.on(

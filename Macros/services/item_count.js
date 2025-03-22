@@ -8,7 +8,7 @@ let item_text;
 let item_image;
 const ItemStackHelperClass = Reflection.getClass("xyz.wagyourtail.jsmacros.client.api.helpers.inventory.ItemStackHelper");
 const ItemStackHelperType = Java.type("xyz.wagyourtail.jsmacros.client.api.helpers.inventory.ItemStackHelper");
-let item = new ItemStackHelperType(config.item ?? "minecraft:barrier", 1);
+let item = new ItemStackHelperType(config.item ?? "barrier", 1);
 d2d.setOnInit(JavaWrapper.methodToJava(() => {
     item_text = d2d.addText("/item_count <item>", 53, d2d.getHeight() - 27, 0xffffff, 0, true, 1, 0);
     item_image = d2d.addItem(35, d2d.getHeight() - 32, item);

@@ -2,11 +2,13 @@
     // services start with minecraft, when enabled and are meant to be persistent scripts.
     JsMacros.assertEvent(event, "Service");
     const ItemStackHelperType = Java.type("xyz.wagyourtail.jsmacros.client.api.helpers.inventory.ItemStackHelper");
+    //   @ts-ignore
     function isGrimoire(item) {
         return (item.getItemId() === "minecraft:raw_iron" &&
             item.getNBT().asCompoundHelper().get(`ClueScrolls.clues.0.clueType`) !==
                 null);
     }
+    //  @ts-ignore
     function parseGrimoire(item) {
         const uuid = item
             .getNBT()
@@ -118,6 +120,7 @@
             });
         });
     }
+    //  @ts-ignore
     function fetchGrimoires(inventory, mapIds) {
         const grimoiresData = [];
         mapIds.forEach((mapId) => {
@@ -277,7 +280,7 @@
         screen.setOnKeyPressed(JavaWrapper.methodToJava((key) => {
             // Chat.log("Key: " + key);
             if (key === 32) {
-                filterInput.setText(GlobalVars.getString("grimoireFilters" ?? ""));
+                filterInput.setText(GlobalVars.getString("grimoireFilters"));
             }
             if (key === 67) {
                 // copy filters from item under cursor
@@ -309,7 +312,7 @@
             }
             if (key === 70) {
                 // last filter + quick
-                const filterString = GlobalVars.getString("grimoireFilters" ?? "");
+                const filterString = GlobalVars.getString("grimoireFilters");
                 filterInput.setText(filterString);
                 reloadGrimoires();
                 filteredGrimoires.forEach((g) => {
@@ -337,7 +340,7 @@
             b.setLabel(`Toggle ${toggleMaps[(toggleIndex + 1) % toggleMaps.length]}`);
         }));
         screen.addButton(screen.getWidth() - 100, 100, 90, 20, "Last filters", JavaWrapper.methodToJava(() => {
-            filterInput.setText(GlobalVars.getString("grimoireFilters" ?? ""));
+            filterInput.setText(GlobalVars.getString("grimoireFilters"));
             reloadGrimoires();
         }));
         // screen.addCheckbox(x, y, width, height, text, checked, showMessage, callback)

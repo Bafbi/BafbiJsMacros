@@ -1,6 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const automine_1 = require("./automine");
+import { isViewChanged } from "./automine";
 {
     let afk_pos = null;
     let afk_view = null;
@@ -17,7 +15,7 @@ const automine_1 = require("./automine");
         const player = Player.getPlayer();
         const pos = player.getBlockPos();
         const view = [player.getYaw(), player.getPitch()];
-        if (!(pos.getX() === afk_pos.getX()) || !(pos.getZ() === afk_pos.getZ()) || (0, automine_1.isViewChanged)(view, afk_view)) {
+        if (!(pos.getX() === afk_pos.getX()) || !(pos.getZ() === afk_pos.getZ()) || isViewChanged(view, afk_view)) {
             Chat.log("moved");
             afk_pos = null;
             KeyBind.keyBind("key.attack", false);

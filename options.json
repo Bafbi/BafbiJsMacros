@@ -1,0 +1,61 @@
+{
+  "version": 3,
+  "core": {
+    "maxLockTime": 500,
+    "defaultProfile": "default",
+    "anythingIgnored": [
+      "Sound",
+      "Tick",
+      "RecvPacket",
+      "SendPacket"
+    ],
+    "profiles": {
+      "default": [
+        {
+          "triggerType": "EVENT",
+          "event": "ProfileLoad",
+          "scriptFile": "index.js",
+          "enabled": false,
+          "joined": false
+        },
+        {
+          "triggerType": "EVENT",
+          "event": "Sound",
+          "scriptFile": "autopeche.js",
+          "enabled": false,
+          "joined": false
+        },
+        {
+          "triggerType": "KEY_RISING",
+          "event": "key.keyboard.g",
+          "scriptFile": "index.js",
+          "enabled": false,
+          "joined": false
+        }
+      ]
+    },
+    "services": {
+      "ItemCounter": {
+        "file": "services/item_count.js",
+        "enabled": true
+      }
+    }
+  },
+  "client": {
+    "sortMethod": "Enabled",
+    "sortServicesMethod": "Enabled",
+    "showSlotIndexes": false,
+    "disableKeyWhenScreenOpen": true,
+    "editorLinterOverrides": {},
+    "editorHistorySize": 20,
+    "editorSuggestions": true,
+    "editorFont": "jsmacros:monocraft",
+    "externalEditor": true,
+    "externalEditorCommand": "zeditor %MacroFolder %File",
+    "showRunningServices": true,
+    "serviceAutoReload": true
+  },
+  "js": {
+    "extraGraalOptions": {}
+  }
+}

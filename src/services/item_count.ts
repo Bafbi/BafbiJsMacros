@@ -1,5 +1,5 @@
 // load config
-const config: {item: string | null} = {item: null};
+const config: { item: ItemId } = { item: null };
 if (FS.exists("item_count.json")) {
   Object.assign(config, JSON.parse(FS.open("item_count.json").read()));
 }
@@ -15,7 +15,7 @@ const ItemStackHelperType = Java.type(
   "xyz.wagyourtail.jsmacros.client.api.helpers.inventory.ItemStackHelper",
 );
 let item: ItemStackHelper = new ItemStackHelperType(
-  config.item ?? "minecraft:barrier",
+  config.item ?? "barrier",
   1,
 );
 

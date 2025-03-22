@@ -16,6 +16,7 @@
     }[];
   }
 
+  //   @ts-ignore
   function isGrimoire(item: ItemStackHelper): boolean {
     return (
       item.getItemId() === "minecraft:raw_iron" &&
@@ -24,6 +25,7 @@
     );
   }
 
+  //  @ts-ignore
   function parseGrimoire(item: ItemStackHelper): Grimoire {
     const uuid = item
       .getNBT()
@@ -158,7 +160,7 @@
 
       g.grimoire.tasks.forEach((t, j) => {
         let item: ItemStackHelper = new ItemStackHelperType(
-          `minecraft:${t.material}`,
+          `minecraft:${t.material}` as ItemId,
           1,
         );
         if (item === null)
@@ -178,6 +180,7 @@
     });
   }
 
+  //  @ts-ignore
   function fetchGrimoires(
     inventory: Inventory,
     mapIds: string[],
@@ -374,7 +377,7 @@
         JavaWrapper.methodToJava((key) => {
           // Chat.log("Key: " + key);
           if (key === 32) {
-            filterInput.setText(GlobalVars.getString("grimoireFilters" ?? ""));
+            filterInput.setText(GlobalVars.getString("grimoireFilters"));
           }
           if (key === 67) {
             // copy filters from item under cursor
@@ -413,7 +416,7 @@
           }
           if (key === 70) {
             // last filter + quick
-            const filterString = GlobalVars.getString("grimoireFilters" ?? "");
+            const filterString = GlobalVars.getString("grimoireFilters");
             filterInput.setText(filterString);
             reloadGrimoires();
             filteredGrimoires.forEach((g) => {
@@ -477,7 +480,7 @@
         20,
         "Last filters",
         JavaWrapper.methodToJava(() => {
-          filterInput.setText(GlobalVars.getString("grimoireFilters" ?? ""));
+          filterInput.setText(GlobalVars.getString("grimoireFilters"));
           reloadGrimoires();
         }),
       );

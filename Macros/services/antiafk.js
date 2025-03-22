@@ -1,9 +1,6 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.isViewChanged = isViewChanged;
 {
     const afk_debug_d2d = Hud.createDraw2D();
-    let d2d_text = null;
+    let d2d_text;
     afk_debug_d2d.setOnInit(JavaWrapper.methodToJava(() => {
         d2d_text = afk_debug_d2d.addText("AFK: false", 10, afk_debug_d2d.getHeight() - 40, 0xffffff, true);
     }));
@@ -81,7 +78,7 @@ exports.isViewChanged = isViewChanged;
         automine_command.unregister();
     });
 }
-function isViewChanged(view, other) {
+export function isViewChanged(view, other) {
     // within 5 degrees
     return Math.abs(view[0] - other[0]) > 5 || Math.abs(view[1] - other[1]) > 5;
 }

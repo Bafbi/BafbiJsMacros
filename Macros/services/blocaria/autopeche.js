@@ -76,9 +76,11 @@
     /// Game utils ///
     /// Game Stats ///
     class MeanList {
-        list = [];
-        sum = 0;
-        size = 10;
+        constructor() {
+            this.list = [];
+            this.sum = 0;
+            this.size = 10;
+        }
         push(value) {
             this.list.push(value);
             this.sum += value;
@@ -94,10 +96,10 @@
         }
     }
     class Stats {
-        xp_gained = 0;
-        money_gained = 0;
-        games_finished = 0;
         constructor() {
+            this.xp_gained = 0;
+            this.money_gained = 0;
+            this.games_finished = 0;
             this.load();
         }
         save() {
@@ -115,19 +117,14 @@
         }
     }
     class StatsHud {
-        d2d = Hud.createDraw2D();
-        stat_xp_gained;
-        stat_money_gained;
-        stat_finished_games;
-        game_status_text;
-        game_status = false;
-        status_time = null;
-        tick_listener;
         constructor() {
             // | Game Status: In game
             // | -------------------------
             // | Finished games: 0
             // | Game time mean: 0
+            this.d2d = Hud.createDraw2D();
+            this.game_status = false;
+            this.status_time = null;
             const line_height = 10;
             const base_pos = [10, 190];
             this.d2d.setOnInit(JavaWrapper.methodToJava(() => {

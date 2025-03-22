@@ -1,7 +1,7 @@
 {
   const afk_debug_d2d = Hud.createDraw2D();
 
-  let d2d_text: Text | null = null;
+  let d2d_text: Text;
 
   afk_debug_d2d.setOnInit(
     JavaWrapper.methodToJava(() => {
