@@ -247,9 +247,9 @@
     const toggleMaps = [["container"], ["main", "hotbar"]];
     const predefinedFilters = {
         next: "~",
-        passif: "#kill @pig @sheep @cow @chicken",
-        spawner: "~ #kill |pig |sheep |cow |chicken |zombie |skeleton |enderman |blaze |wolf |witch |stray |zombified_piglin |creeper",
-        spawnerOne: " ! ~ #kill |pig |sheep |cow |chicken |zombie |skeleton |enderman |blaze |wolf |witch |stray |zombified_piglin |creeper",
+        passif: "~ #kill |pig |sheep |cow |chicken",
+        spawner: "~ #kill |pig |sheep |cow |chicken |zombie |skeleton |enderman |blaze |wolf |witch |stray |zombified_piglin |creeper |mushroom_cow |ocelot",
+        spawnerOne: " ! ~ #kill |pig |sheep |cow |chicken |zombie |skeleton |enderman |blaze |wolf |witch |stray |zombified_piglin |creeper |mushroom_cow |ocelot",
         nonospawner: "~ #kill |phantom |iron_golem |spider |squid",
         mine: "~ #break |stone |coal_ore |iron_ore |gold_ore |diamond_ore |emerald_ore |redstone_ore |lapis_ore |nether_gold_ore |nether_quartz_ore |ancient_debris",
         farm: "~ #break @wheat @carrot @potato @beetroot @melon @pumpkin @cane",

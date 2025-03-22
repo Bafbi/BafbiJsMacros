@@ -139,7 +139,7 @@
         const screen = event.screen;
         if (!inventory.getContainerTitle().includes("Rewards"))
             return;
-        Chat.log("Rewards container opened");
+        // Chat.log("Rewards container opened");
         if (!lastRemovedGrimoire || !lastRemovedGrimoire.tier)
             return;
         Chat.log("Grimoire tier: " + lastRemovedGrimoire.tier);

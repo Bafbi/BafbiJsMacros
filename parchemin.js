@@ -12,6 +12,7 @@ const EXPChanger = JsMacros.on(
       JsMacros.waitForEvent("OpenContainer");
       const eventAndContext = JsMacros.waitForEvent("ContainerUpdate");
       const inventory = eventAndContext.event.inventory;
+
       // Chat.log(inventory.getSlot(22));
       Time.sleep(100);
       inventory.click(20);
