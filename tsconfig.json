@@ -7,9 +7,8 @@
     "outDir": "./Macros",
     "skipLibCheck": true,
     "typeRoots": [],
+    "noImplicitAny": false
   },
-  "include": ["scripts/**/*.ts", "headers/*.d.ts"],
-  "exclude": ["Macros/*"],
-  "outDir": "./Macros",
-  "skipLibCheck": true,
+  "include": ["scripts/**/*.ts", "headers/**/*.d.ts"],
+  "exclude": ["Macros/*"]
 }
