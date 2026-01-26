@@ -24,6 +24,15 @@ const CONFIG = {
     RANGE: 4.5
 };
 
+const draw2d = Hud.createDraw2D();
+const draw3d = Hud.createDraw3D();
+let debugText = null;
+
+draw2d.setOnInit(JavaWrapper.methodToJava(() => {
+    // draw2d automatically clears on init
+    debugText = draw2d.addText("AutoWood: Initializing...", 10, 10, 0xFFFFFF, true);
+}));
+
 /**
  * Main loop logic.
  */
@@ -35,6 +44,9 @@ const onTick = JavaWrapper.methodToJava(() => {
         const player = Player.getPlayer();
         const interactionManager = Player.getInteractionManager();
         const eyePos = player.getEyePos();
+
+        // Reset 3D visuals
+        draw3d.clear();
 
         // 1. Scan for targets
         const targets = [];
@@ -50,6 +62,10 @@ const onTick = JavaWrapper.methodToJava(() => {
 
         if (targets.length === 0) {
             KeyBind.keyBind("key.attack", false);
+            if (debugText) {
+                debugText.setText("AutoWood: Scanning...");
+                debugText.setColor(0xFFFF00);
+            }
             return;
         }
 
@@ -70,17 +86,32 @@ const onTick = JavaWrapper.methodToJava(() => {
 
         // 4. Attack if looking at it
         const lookedAtPos = interactionManager.getTargetedBlock(); // Returns BlockPosHelper
-        if (lookedAtPos && 
+        const isLookingAtTarget = lookedAtPos && 
             lookedAtPos.getX() === targetPos.getX() && 
             lookedAtPos.getY() === targetPos.getY() && 
-            lookedAtPos.getZ() === targetPos.getZ()) {
-            
+            lookedAtPos.getZ() === targetPos.getZ();
+
+        if (isLookingAtTarget) {
             if (!mc.options.keyAttack.isPressed()) {
                 KeyBind.keyBind("key.attack", true);
             }
         } else {
             KeyBind.keyBind("key.attack", false);
         }
+
+        // 5. Update Debug Visuals
+        if (debugText) {
+            const dist = Math.sqrt(getDistanceSq(eyePos, targetCenter));
+            debugText.setText(`Target: ${targetBlock.getId()} (${dist.toFixed(1)}m)${isLookingAtTarget ? " §7[Mining]" : ""}`);
+            debugText.setColor(isLookingAtTarget ? 0x00FF00 : 0x00AAFF);
+        }
+
+        draw3d.addTraceLine(targetCenter.x, targetCenter.y, targetCenter.z, 0x00FF00);
+        draw3d.addBox(
+            targetPos.getX(), targetPos.getY(), targetPos.getZ(), 
+            targetPos.getX() + 1, targetPos.getY() + 1, targetPos.getZ() + 1, 
+            0x00FF00, 0x00FF00, false
+        );
 
     } catch (e) {
         Chat.log(Chat.createTextHelperFromString("§cAutoWood Error: " + e));
@@ -112,11 +143,15 @@ function getDistanceSq(pos1, pos2) {
 }
 
 // --- Startup ---
+draw2d.register();
+draw3d.register();
 const tickListener = JsMacros.on("Tick", onTick);
 Chat.log(Chat.createTextHelperFromString("§aAutoWood Service Started"));
 
 // --- Shutdown ---
 event.stopListener = JavaWrapper.methodToJava(() => {
+    draw2d.unregister();
+    draw3d.unregister();
     JsMacros.off(tickListener);
     KeyBind.keyBind("key.attack", false);
     Chat.log(Chat.createTextHelperFromString("§cAutoWood Service Stopped"));
