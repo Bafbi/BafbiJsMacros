@@ -1,17 +1,15 @@
 {
   "compilerOptions": {
-    "target": "ES2020", // Compatible with GraalVM
-    "module": "ESNext", // Or "CommonJS" depending on game engine
-    "lib": ["ES2020"],
-    "strict": false,
+    "module": "CommonJS",
     "removeComments": false,
-    "esModuleInterop": true,
-    "outDir": "Macros", // Output JS into the Macros folder
-    "rootDir": "src", // Your macro source files
-    "moduleResolution": "node",
-    "allowJs": true,
-    "skipLibCheck": true
+    "target": "ES2022",
+    "lib": ["ES2022"],
+    "outDir": "./Macros",
+    "skipLibCheck": true,
+    "typeRoots": [],
   },
-  "include": ["src", "headers"],
-  "exclude": ["Macros"]
+  "include": ["scripts/**/*.ts", "headers/*.d.ts"],
+  "exclude": ["Macros/*"],
+  "outDir": "./Macros",
+  "skipLibCheck": true,
 }

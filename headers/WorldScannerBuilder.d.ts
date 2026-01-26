@@ -4,7 +4,7 @@
  * 
  * @author aMelonRind
  * @version 1.9.0
- * @see Packages.xyz.wagyourtail.jsmacros.client.api.classes.worldscanner.WorldScannerBuilder
+ * @see Packages.com.jsmacrosce.jsmacros.client.api.classes.worldscanner.WorldScannerBuilder
  */
 declare namespace TypedWorldScannerBuilder {
 
@@ -72,6 +72,7 @@ declare namespace TypedWorldScannerBuilder {
 
   interface StringFilter<T extends string = string> {
 
+    is(operation: 'EQUALS', compareTo: T): Main; // for ts performance
     is<M extends StringFilterOperation, S extends string>(operation: M, compareTo: StringCompareTo<M, T, S>): Main;
     // test<M extends StringFilterOperation>(operation: M, compareTo: StringCompareTo<M, T>): Main;
     // is<M extends StringFilterOperation>(methodArgs: []?, filterArgs: [operation: M, compareTo: StringCompareTo<M, T>]): Main;
