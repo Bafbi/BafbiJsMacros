@@ -7,11 +7,10 @@ settings:
 importers:
 
   .:
-    dependencies:
+    devDependencies:
       biome:
         specifier: ^0.3.3
         version: 0.3.3
-    devDependencies:
       esbuild:
         specifier: ^0.23.0
         version: 0.23.0
