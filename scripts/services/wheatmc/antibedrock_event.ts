@@ -5,7 +5,7 @@ const draw3d: Draw3D = Hud.createDraw3D();
 
 // Configuration
 const BEDROCK_ID = "minecraft:bedrock";
-const GHOST_DURATION_MS = 3000;
+const GHOST_DURATION_MS = 6000;
 
 interface GhostBlock {
   pos: { x: number; y: number; z: number };

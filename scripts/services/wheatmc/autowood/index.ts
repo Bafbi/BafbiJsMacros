@@ -39,12 +39,14 @@ const CONFIG = {
   ],
   RANGE: 4.3,
   DEBUG: false,
-  INTERPOLATION_SPEED: 0.3, // 0.0 to 1.0 (higher = faster)
-  INTERPOLATION_THRESHOLD: 90.0, // Degrees away before we start interpolating
-  MIN_ROTATION_SPEED: 2.5, // Degrees per tick (ensures snapping)
+  INTERPOLATION_SPEED: 0.5, // 0.0 to 1.0 (higher = faster)
+  INTERPOLATION_THRESHOLD: 1.5, // Degrees away before we consider "locked"
+  MIN_ROTATION_SPEED: 0.5, // Minimum degrees per tick
   MAX_ROTATION_SPEED: 180.0, // Max degrees per tick
   SWAY_AMPLITUDE: 0.15, // Degrees of "breathing" sway
   SWAY_FREQUENCY: 1.0, // Speed of sway
+  AIM_STIFFNESS: 0.15, // Acceleration factor for physics aim
+  AIM_DAMPING: 0.65,    // Inertia factor (friction) for physics aim
 };
 
 const logger = new Logger(
@@ -70,7 +72,7 @@ draw2d.setOnInit(
       10,
       0xffffff,
       true,
-    );
+      );
   }),
 );
 
@@ -166,6 +168,7 @@ const onTick = JavaWrapper.methodToJava(() => {
       targets,
       player,
       useVein ? lastMinedPos : null,
+      aimController.getVelocity()
     );
     const target = sortedTargets[0];
 
@@ -232,17 +235,6 @@ const onTick = JavaWrapper.methodToJava(() => {
 });
 
 /**
- * Listener for AttackBlock event.
- * Updates the vein state when the player manually starts attacking a block.
- */
-// const onAttackBlock = JavaWrapper.methodToJava((event: any) => {
-//   const block = event.block;
-//   if (CONFIG.TARGET_BLOCKS.indexOf(block.getId()) !== -1) {
-//     updateVeinAnchor(block.getX(), block.getY(), block.getZ(), "AttackBlock");
-//   }
-// });
-
-/**
  * Listener for MineBlock event.
  * Updates the vein state when our target block is broken.
  */
@@ -263,7 +255,6 @@ function updateVeinAnchor(x: number, y: number, z: number, source: string) {
 draw2d.register();
 draw3d.register();
 const tickListener = JsMacros.on("Tick", onTick);
-// const attackListener = JsMacros.on("AttackBlock", onAttackBlock);
 const mineBlockListener = EventUtils.onCustom<MineBlockEvent>(
   EVENT_MINE_BLOCK,
   onMineBlock,
@@ -275,7 +266,6 @@ logger.info("AutoWood Service Started (Smart Aim Assist)");
   draw2d.unregister();
   draw3d.unregister();
   JsMacros.off(tickListener);
-  // JsMacros.off(attackListener);
   JsMacros.off(mineBlockListener);
   logger.info("AutoWood Service Stopped");
 });

@@ -5,7 +5,7 @@ const logger = new debug_1.Logger("AntiBedrockEvent", debug_1.LogLevel.ERROR);
 const draw3d = Hud.createDraw3D();
 // Configuration
 const BEDROCK_ID = "minecraft:bedrock";
-const GHOST_DURATION_MS = 3000;
+const GHOST_DURATION_MS = 6000;
 // State
 const ghostBlocks = new Map();
 // Reflection Cache

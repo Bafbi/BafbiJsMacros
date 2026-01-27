@@ -12,6 +12,14 @@ export class AimController {
   private currentOffset: { x: number, y: number, z: number } = { x: 0, y: 0, z: 0 };
   private noiseTime: number = Math.random() * 1000;
   private lastEyePos: { x: number, y: number, z: number } | null = null;
+  private velocity: { yaw: number, pitch: number } = { yaw: 0, pitch: 0 };
+
+  /**
+   * Returns the current angular velocity of the aim.
+   */
+  public getVelocity() {
+    return { ...this.velocity };
+  }
 
   /**
    * Calculates the humanized target position and applies aim updates.
@@ -49,8 +57,8 @@ export class AimController {
     rotations.yaw += sway.yaw;
     rotations.pitch += sway.pitch;
 
-    // 6. Interpolate Movement (Speed boosted by movement)
-    return this.applyMovement(player, rotations, config, speed);
+    // 6. Apply Physics-based Movement (Inertia + Acceleration)
+    return this.applyPhysicsMovement(player, rotations, config);
   }
 
   /**
@@ -106,47 +114,53 @@ export class AimController {
   }
 
   /**
-   * Applies movement with dynamic interpolation speed.
+   * Applies physics-based movement with acceleration and damping.
    */
-  private applyMovement(player: any, targetRot: { yaw: number, pitch: number }, config: any, speed: number) {
+  private applyPhysicsMovement(player: any, targetRot: { yaw: number, pitch: number }, config: any) {
     const currentYaw = player.getYaw();
     const currentPitch = player.getPitch();
 
-    // Boost interpolation speed when moving to prevent "drag"
-    // Also add a random variance to break robotic curves
-    const speedBoost = speed * 0.5;
-    const randomVariance = 0.9 + (Math.random() * 0.2); // 0.9 to 1.1
-    const dynamicFactor = (config.INTERPOLATION_SPEED + speedBoost) * randomVariance;
-
-    const nextYaw = this.interpolateAngle(currentYaw, targetRot.yaw, dynamicFactor, config.MIN_ROTATION_SPEED, config.MAX_ROTATION_SPEED);
-    const nextPitch = this.interpolateAngle(currentPitch, targetRot.pitch, dynamicFactor, config.MIN_ROTATION_SPEED, config.MAX_ROTATION_SPEED);
-
     const yawDiff = getAngleDiff(currentYaw, targetRot.yaw);
     const pitchDiff = getAngleDiff(currentPitch, targetRot.pitch);
+
+    // Physics constants
+    const stiffness = config.AIM_STIFFNESS || 0.12;
+    const damping = config.AIM_DAMPING || 0.65;
+    const minStep = config.MIN_ROTATION_SPEED || 0.1;
+    const maxStep = config.MAX_ROTATION_SPEED || 180.0;
+
+    // Calculate acceleration (spring force)
+    const yawAcc = yawDiff * stiffness;
+    const pitchAcc = pitchDiff * stiffness;
+
+    // Update velocity with damping (friction)
+    this.velocity.yaw = (this.velocity.yaw + yawAcc) * damping;
+    this.velocity.pitch = (this.velocity.pitch + pitchAcc) * damping;
+
+    // Limit velocity to max speed
+    const currentVelMag = Math.sqrt(this.velocity.yaw ** 2 + this.velocity.pitch ** 2);
+    if (currentVelMag > maxStep) {
+      const scale = maxStep / currentVelMag;
+      this.velocity.yaw *= scale;
+      this.velocity.pitch *= scale;
+    }
+
+    // Ensure we don't crawl too slowly if we are far away
+    if (Math.abs(yawDiff) > 0.5 && Math.abs(this.velocity.yaw) < minStep) {
+        this.velocity.yaw = Math.sign(yawDiff) * minStep;
+    }
+    if (Math.abs(pitchDiff) > 0.5 && Math.abs(this.velocity.pitch) < minStep) {
+        this.velocity.pitch = Math.sign(pitchDiff) * minStep;
+    }
+
+    // Apply movement
+    const nextYaw = currentYaw + this.velocity.yaw;
+    const nextPitch = currentPitch + this.velocity.pitch;
+
+    player.lookAt(nextYaw, nextPitch);
+    
+    // Return true if we are reasonably close to target
     const totalDiff = Math.sqrt(yawDiff * yawDiff + pitchDiff * pitchDiff);
-
-    if (totalDiff <= config.INTERPOLATION_THRESHOLD) {
-      player.lookAt(nextYaw, nextPitch);
-      return true;
-    }
-    return false;
-  }
-
-  private interpolateAngle(current: number, target: number, factor: number, minSpeed: number, maxSpeed: number) {
-    const diff = getAngleDiff(current, target);
-    if (Math.abs(diff) < 0.01) return target;
-
-    let step = diff * factor;
-    const absDiff = Math.abs(diff);
-
-    if (Math.abs(step) < minSpeed) {
-      step = Math.sign(diff) * Math.min(minSpeed, absDiff);
-    }
-    if (Math.abs(step) > maxSpeed) {
-      step = Math.sign(diff) * maxSpeed;
-    }
-
-    if (Math.abs(step) >= absDiff) return target;
-    return current + step;
+    return totalDiff <= (config.INTERPOLATION_THRESHOLD || 1.0);
   }
 }
