@@ -1,3 +1,6 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.isViewChanged = isViewChanged;
 {
     let afk_pos = null;
     let afk_view = null;
@@ -32,7 +35,7 @@
         automine_command.unregister();
     });
 }
-export function isViewChanged(view, other) {
+function isViewChanged(view, other) {
     // within 5 degrees
     return Math.abs(view[0] - other[0]) > 20 || Math.abs(view[1] - other[1]) > 20;
 }

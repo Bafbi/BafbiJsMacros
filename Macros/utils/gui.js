@@ -1,4 +1,8 @@
-export class Gui {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.MouseClick = exports.Gui = void 0;
+class Gui {
+    inventory;
     constructor(command) {
         Chat.say(`/${command}`);
         this.wait_new_inventory();
@@ -75,9 +79,10 @@ export class Gui {
         return 0;
     }
 }
-export var MouseClick;
+exports.Gui = Gui;
+var MouseClick;
 (function (MouseClick) {
     MouseClick[MouseClick["LEFT"] = 0] = "LEFT";
     MouseClick[MouseClick["RIGHT"] = 1] = "RIGHT";
     MouseClick[MouseClick["MIDDLE"] = 2] = "MIDDLE";
-})(MouseClick || (MouseClick = {}));
+})(MouseClick || (exports.MouseClick = MouseClick = {}));

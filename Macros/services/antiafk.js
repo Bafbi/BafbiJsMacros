@@ -1,3 +1,6 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.isViewChanged = isViewChanged;
 {
     const afk_debug_d2d = Hud.createDraw2D();
     let d2d_text;
@@ -78,7 +81,7 @@
         automine_command.unregister();
     });
 }
-export function isViewChanged(view, other) {
+function isViewChanged(view, other) {
     // within 5 degrees
     return Math.abs(view[0] - other[0]) > 5 || Math.abs(view[1] - other[1]) > 5;
 }
