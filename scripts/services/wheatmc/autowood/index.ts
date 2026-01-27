@@ -34,8 +34,10 @@ const CONFIG = {
     "minecraft:dark_oak_wood",
     "minecraft:mangrove_wood",
     "minecraft:cherry_wood",
+    "minecraft:coal_ore",
+    "minecraft:iron_ore",
   ],
-  RANGE: 4.5,
+  RANGE: 4.3,
   DEBUG: false,
   INTERPOLATION_SPEED: 0.3, // 0.0 to 1.0 (higher = faster)
   INTERPOLATION_THRESHOLD: 90.0, // Degrees away before we start interpolating
@@ -110,7 +112,7 @@ const onTick = JavaWrapper.methodToJava(() => {
 
     // 1. Scan for targets
     const targets = [];
-    const centerPos = player.getBlockPos().up();
+    const centerPos = player.getBlockPos().offset(0, 1, 0);
     const intRange = Math.ceil(CONFIG.RANGE);
 
     World.iterateSphere(
