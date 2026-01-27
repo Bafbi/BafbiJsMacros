@@ -1,38 +1,38 @@
 // load config
-const config: { item: ItemId } = { item: null };
+const ic_config: { item: ItemId } = { item: null };
 if (FS.exists("item_count.json")) {
-  Object.assign(config, JSON.parse(FS.open("item_count.json").read()));
+  Object.assign(ic_config, JSON.parse(FS.open("item_count.json").read()));
 }
 
-const d2d = Hud.createDraw2D();
+const ic_d2d = Hud.createDraw2D();
 
 let item_text: Text;
 let item_image: Item;
 const ItemStackHelperClass = Reflection.getClass(
-  "xyz.wagyourtail.jsmacros.client.api.helpers.inventory.ItemStackHelper",
+  "com.jsmacrosce.jsmacros.client.api.helper.inventory.ItemStackHelper",
 );
 const ItemStackHelperType = Java.type(
-  "xyz.wagyourtail.jsmacros.client.api.helpers.inventory.ItemStackHelper",
+  "com.jsmacrosce.jsmacros.client.api.helper.inventory.ItemStackHelper",
 );
-let item: ItemStackHelper = new ItemStackHelperType(
-  config.item ?? "barrier",
+let item: ItemStackHelper = new (ItemStackHelperType as any)(
+  ic_config.item ?? "barrier",
   1,
 );
 
-d2d.setOnInit(
+ic_d2d.setOnInit(
   JavaWrapper.methodToJava(() => {
-    item_text = d2d.addText(
+    item_text = ic_d2d.addText(
       "/item_count <item>",
       53,
-      d2d.getHeight() - 27,
+      ic_d2d.getHeight() - 27,
       0xffffff,
       0,
       true,
       1,
       0,
     );
-    item_image = d2d.addItem(35, d2d.getHeight() - 32, item);
-    config.item && countItems();
+    item_image = ic_d2d.addItem(35, ic_d2d.getHeight() - 32, item);
+    ic_config.item && countItems();
   }),
 );
 
@@ -63,8 +63,8 @@ const itemCountCommand = Chat.getCommandManager()
       const inv = Player.openInventory();
       item = inv.getSlot(inv.getSelectedHotbarSlotIndex() + 36);
       item_image.setItem(item);
-      config.item = item.getItemId();
-      FS.open("item_count.json").write(JSON.stringify(config));
+      ic_config.item = item.getItemId();
+      FS.open("item_count.json").write(JSON.stringify(ic_config));
       countItems();
       Chat.log("Item set to " + item.getItemId());
     }),
@@ -74,8 +74,8 @@ const itemCountCommand = Chat.getCommandManager()
     JavaWrapper.methodToJava((context) => {
       item = context.getArg("item") as ItemStackHelper;
       item_image.setItem(item);
-      config.item = item.getItemId();
-      FS.open("item_count.json").write(JSON.stringify(config));
+      ic_config.item = item.getItemId();
+      FS.open("item_count.json").write(JSON.stringify(ic_config));
       countItems();
       Chat.log("Item set to " + item.getItemId());
     }),
@@ -83,11 +83,11 @@ const itemCountCommand = Chat.getCommandManager()
 
 itemCountCommand.register();
 
-d2d.register();
+ic_d2d.register();
 
 // this fires when the service is stopped
 (event as Events.Service).stopListener = JavaWrapper.methodToJava(() => {
-  d2d.unregister();
+  ic_d2d.unregister();
   JsMacros.off(heldItemChangeListener);
   itemCountCommand.unregister();
 });
