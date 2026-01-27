@@ -62,6 +62,9 @@ const onRecvPacket = JavaWrapper.methodToJava((event: Events.RecvPacket) => {
         const p = it.next();
         count++;
 
+        // Log the class of each packet in the bundle for debugging
+        logger.trace(`Bundle packet #${count}: ${p.getClass().getName()}`);
+
         // Inline Filtering for bundled packets
         if (BlockUpdatePacketClass && BlockUpdatePacketClass.isInstance(p)) {
           if (checkSingleBlockUpdate(p)) {
