@@ -49,6 +49,10 @@ class AimController {
         const sway = this.calculateSway(config, speed);
         rotations.yaw += sway.yaw;
         rotations.pitch += sway.pitch;
+        // 5.1 Clamp Target Pitch
+        const minPitch = config.MIN_PITCH ?? -90;
+        const maxPitch = config.MAX_PITCH ?? 90;
+        rotations.pitch = Math.max(minPitch, Math.min(maxPitch, rotations.pitch));
         // 6. Apply Physics-based Movement (Inertia + Acceleration)
         return this.applyPhysicsMovement(player, rotations, config);
     }
@@ -131,7 +135,11 @@ class AimController {
         }
         // Apply movement
         const nextYaw = currentYaw + this.velocity.yaw;
-        const nextPitch = currentPitch + this.velocity.pitch;
+        let nextPitch = currentPitch + this.velocity.pitch;
+        // Clamp nextPitch to limits
+        const minPitch = config.MIN_PITCH ?? -90;
+        const maxPitch = config.MAX_PITCH ?? 90;
+        nextPitch = Math.max(minPitch, Math.min(maxPitch, nextPitch));
         player.lookAt(nextYaw, nextPitch);
         // Return true if we are reasonably close to target
         const totalDiff = Math.sqrt(yawDiff * yawDiff + pitchDiff * pitchDiff);

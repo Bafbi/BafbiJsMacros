@@ -29,16 +29,18 @@ const CONFIG = {
         "minecraft:coal_ore",
         "minecraft:iron_ore",
     ],
-    RANGE: 4.3,
+    RANGE: 4.5,
     DEBUG: false,
-    INTERPOLATION_SPEED: 0.5, // 0.0 to 1.0 (higher = faster)
+    INTERPOLATION_SPEED: 0.6, // 0.0 to 1.0 (higher = faster)
     INTERPOLATION_THRESHOLD: 1.5, // Degrees away before we consider "locked"
     MIN_ROTATION_SPEED: 0.5, // Minimum degrees per tick
     MAX_ROTATION_SPEED: 180.0, // Max degrees per tick
     SWAY_AMPLITUDE: 0.15, // Degrees of "breathing" sway
     SWAY_FREQUENCY: 1.0, // Speed of sway
-    AIM_STIFFNESS: 0.15, // Acceleration factor for physics aim
-    AIM_DAMPING: 0.65, // Inertia factor (friction) for physics aim
+    AIM_STIFFNESS: 0.4, // Acceleration factor for physics aim (reduced for control)
+    AIM_DAMPING: 0.5, // Inertia factor (friction) for physics aim (reduced to make it feel stiffer/heavier)
+    MIN_PITCH: -45, // Minimum vertical angle (up)
+    MAX_PITCH: 45, // Maximum vertical angle (down)
 };
 const logger = new debug_1.Logger("AutoWood", CONFIG.DEBUG ? debug_1.LogLevel.TRACE : debug_1.LogLevel.INFO);
 const draw2d = Hud.createDraw2D();
@@ -51,7 +53,7 @@ let lastMinedTime = 0;
 const VEIN_TIMEOUT_MS = 5000; // Stop prioritizing vein after 5s of inactivity
 draw2d.setOnInit(JavaWrapper.methodToJava(() => {
     // draw2d automatically clears on init
-    debugText = draw2d.addText("AutoWood: Initializing...", 10, 10, 0xffffff, true);
+    debugText = draw2d.addText("AutoWood: Initializing...", 10, 200, 0xffffff, true);
 }));
 /**
  * Checks if a specific point is visible from the player's eyes.
@@ -90,9 +92,12 @@ const onTick = JavaWrapper.methodToJava(() => {
                 const tz = bp.getZ();
                 // Target the closest face center instead of the block center
                 const aimPos = (0, math_1.getClosestFace)(eyePos, tx, ty, tz);
-                // Only add if within actual reach and visible
+                // Only add if within actual reach, visible, and within pitch limits
                 const distSq = (0, math_1.getDistanceSq)(eyePos, aimPos);
+                const rotations = (0, math_1.getRotations)(eyePos, aimPos);
                 if (distSq <= CONFIG.RANGE * CONFIG.RANGE &&
+                    rotations.pitch >= CONFIG.MIN_PITCH &&
+                    rotations.pitch <= CONFIG.MAX_PITCH &&
                     isVisible(eyePos, tx, ty, tz, aimPos.x, aimPos.y, aimPos.z)) {
                     targets.push({
                         id: id + "",
