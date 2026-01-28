@@ -37,6 +37,12 @@ class Logger {
         this.minLevel = minLevel;
     }
     /**
+     * Gets the current minimum log level.
+     */
+    getLogLevel() {
+        return this.minLevel;
+    }
+    /**
      * Sets the minimum log level.
      */
     setLogLevel(level) {
