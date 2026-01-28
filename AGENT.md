@@ -6,13 +6,14 @@ This document provides specialized instructions for AI agents working on this re
 
 The project is divided into two main areas:
 - **`scripts/` (Source):** TypeScript source files. This is where all logic changes should be made.
-- **`Macros/` (Runtime):** Compiled JavaScript files. These are the files executed by the JsMacros standalone runtime. 
+- **`Macros/` (Runtime):** Compiled JavaScript files. These are the files executed by the JsMacros standalone runtime. Changes should **never** be made directly here, as they will be overwritten on the next build.
 - **`headers/` (API Docs):** TypeScript definition files for the JsMacros v2.0.0-dev API.
 
 ### Core Patterns
 - **Services:** Found in `scripts/services/`. These use `JsMacros.assertEvent(event, "Service")` and are meant to be persistent.
 - **Lifecycle Management:** Always implement `event.stopListener` in services to unregister listeners, clear HUDs, and release keys.
 - **Utilities:** Shared logic (Logger, GUI helpers, math) resides in `scripts/utils/`.
+- **Debugs:** Some debugging scripts may be found in `scripts/debugs/` for temporary testing.
 
 ## 2. API Knowledge & Information Retrieval
 
