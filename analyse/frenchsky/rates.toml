@@ -1,0 +1,52 @@
+# Taux de farm FrenchSky — VOS VALEURS
+#
+# ⚠ ESTIMATIONS DE DÉPART issues des mécaniques vanilla (voir RESEARCH.md).
+# Remplacez-les par vos mesures réelles : /metrics set en visant le bloc,
+# farmer 15 min, puis reporter le taux horaire ici.
+#
+# Clés = noms EXACTS (pnpm list-items). Revenu/h = prix farmage × taux.
+# La vente est un bonus affiché, hors classement.
+
+# --- Cultures (cassage instantané) ---
+"Baies" = 18000
+"Blé" = 12000
+"Graines de Blé" = 12000
+"Citrouilles" = 12000
+"Verrues du nether" = 30000
+"Carottes" = 30000
+"Pommes de terre" = 30000
+"Pommes de terre empoisonnées" = 600
+"Fèves de cacao" = 30000
+"Blocs de Pastèque" = 50000
+"Cactus" = 15000
+"Lianes" = 20000
+
+# --- Minage (Eff V + Haste II → instantané) ---
+"Pierres" = 30000
+"Roches" = 30000
+"Basalt" = 30000
+"Blocks de magma" = 30000
+"Éclats d'améthyste" = 2000
+
+# --- Bûches (hache Eff V + Haste II) ---
+"Bûches de chêne" = 30000
+"Bûches de sapin" = 30000
+"Bûches de cerisier" = 30000
+"Bûches carmins" = 30000
+"Feuilles de chêne" = 20000
+"Feuilles de sapin" = 20000
+"Feuilles de cerisier" = 20000
+
+# --- Blocs Silk Touch (fermes custom) ---
+"Blocs d'herbe" = 18000
+"Mycéliums" = 18000
+"Podzol" = 18000
+"Blocs d'argile" = 15000
+"Blocs de neige" = 15000
+"Glaces" = 15000
+"Blocs de champignon rouge" = 15000
+"Tiges de champignon" = 15000
+"Blocs de verrue du nether" = 20000
+
+# --- Pommes (drops rares des feuilles de chêne) ---
+"Pommes" = 300

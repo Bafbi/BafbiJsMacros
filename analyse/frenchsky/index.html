@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FrenchSky — Analyse économique</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>⛏️ FrenchSky — Analyse économique</h1>
+    <div id="meta" class="meta">Chargement…</div>
+  </header>
+
+  <main>
+    <section class="controls">
+      <input id="search" type="search" placeholder="Filtrer par item…" autocomplete="off" />
+      <label class="toggle">
+        <input type="checkbox" id="only-configured" />
+        <span>Items configurés uniquement</span>
+      </label>
+      <span id="count" class="count"></span>
+    </section>
+
+    <section class="table-wrap">
+      <table id="items">
+        <thead>
+          <tr>
+            <th data-key="name" class="sortable">Item</th>
+            <th data-key="farming" class="sortable num">Prix farmage</th>
+            <th data-key="selling" class="sortable num">Bonus vente</th>
+            <th data-key="rate" class="sortable num">Taux /h</th>
+            <th data-key="revenue" class="sortable num primary">Revenu /h</th>
+            <th data-key="bonusPerHour" class="sortable num">Bonus /h</th>
+            <th data-key="trend24" class="sortable num">Tend. 24h</th>
+            <th data-key="trendSpan" class="sortable num">Tend. période</th>
+            <th data-key="score" class="sortable num">Score</th>
+            <th data-key="spark" class="sortable">Courbe</th>
+          </tr>
+        </thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </section>
+
+    <footer>
+      <p id="hint">💡 Pour actualiser les données : <code>pnpm fetch</code> (cache valide 4h).</p>
+    </footer>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

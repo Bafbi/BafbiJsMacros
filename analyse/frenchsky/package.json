@@ -1,0 +1,16 @@
+{
+  "name": "frenchsky-economy-analysis",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Analyse de l'économie FrenchSky : taux de farm, prix dynamiques, revenus potentiels.",
+  "scripts": {
+    "fetch": "node fetch-data.mjs",
+    "fetch:force": "node fetch-data.mjs --force",
+    "list-items": "node fetch-data.mjs --list-items",
+    "dev": "node server.mjs"
+  },
+  "dependencies": {
+    "smol-toml": "^1.4.0"
+  }
+}
