@@ -13,7 +13,7 @@ const FOLIAGE_BLOCKS = new Set([
     "minecraft:tall_grass",
     "minecraft:fern",
     "minecraft:large_fern",
-    "minecraft:oak_leaves",
+    // "minecraft:oak_leaves",
     // "minecraft:spruce_leaves",
     // "minecraft:birch_leaves",
     // "minecraft:jungle_leaves",
@@ -46,11 +46,11 @@ const FOLIAGE_BLOCKS = new Set([
     "minecraft:cave_vines",
     "minecraft:cave_vines_plant",
     "minecraft:sweet_berry_bush",
-    "minecraft:moss_carpet",
+    // "minecraft:moss_carpet",
     "minecraft:hanging_roots",
     "minecraft:spore_blossom",
-    "minecraft:azalea",
-    "minecraft:flowering_azalea",
+    // "minecraft:azalea",
+    // "minecraft:flowering_azalea",
     "minecraft:pink_petals",
 ]);
 // State

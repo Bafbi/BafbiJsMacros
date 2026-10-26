@@ -1,0 +1,9 @@
+{
+  "id": "minecraft:note_block",
+  "properties": {
+    "1": "note",
+    "false": "powered",
+    "flute": "instrument"
+  },
+  "displayName": "TextHelper:{\"text\": \"Note Block\"}"
+}

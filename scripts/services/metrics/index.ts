@@ -4,9 +4,13 @@
  * Commands: /metrics set, /metrics reset
  */
 import { Logger, LogLevel } from "../../utils/debug";
-import { EventUtils, EVENT_MINE_BLOCK, MineBlockEvent } from "../../utils/events";
+import {
+  EventUtils,
+  EVENT_MINE_BLOCK,
+  MineBlockEvent,
+} from "../../utils/events";
 
-const logger = new Logger("Metrics", LogLevel.ERROR);
+const logger = new Logger("Metrics", LogLevel.WARN);
 
 const METRICS_CONFIG_FILE = "mining_metrics.json";
 
@@ -129,14 +133,14 @@ function updateHudText() {
 // --- Event Handlers ---
 
 const onMineBlock = (data: MineBlockEvent) => {
-    if (data.id === metrics_config.target_block) {
-        session_total++;
-        break_history.push(Date.now());
-        logger.info(
-            `Block break recorded at [${data.pos.x}, ${data.pos.y}, ${data.pos.z}]. Session total: ${session_total}`,
-        );
-        updateHudText();
-    }
+  if (data.id === metrics_config.target_block) {
+    session_total++;
+    break_history.push(Date.now());
+    logger.info(
+      `Block break recorded at [${data.pos.x}, ${data.pos.y}, ${data.pos.z}]. Session total: ${session_total}`,
+    );
+    updateHudText();
+  }
 };
 
 const onTick = JavaWrapper.methodToJava(() => {
@@ -199,8 +203,8 @@ metricsCmd.register();
 logger.info("Metrics Service initialized.");
 
 const metricsListeners = [
-    JsMacros.on("Tick", onTick),
-    EventUtils.onCustom<MineBlockEvent>(EVENT_MINE_BLOCK, onMineBlock)
+  JsMacros.on("Tick", onTick),
+  EventUtils.onCustom<MineBlockEvent>(EVENT_MINE_BLOCK, onMineBlock),
 ];
 
 (event as Events.Service).stopListener = JavaWrapper.methodToJava(() => {

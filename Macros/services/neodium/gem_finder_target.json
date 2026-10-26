@@ -1,0 +1,8 @@
+{
+  "id": "minecraft:player_head",
+  "properties": {
+    "8": "rotation",
+    "false": "powered"
+  },
+  "displayName": "TextHelper:{\"text\": \"Player Head\"}"
+}

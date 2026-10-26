@@ -155,19 +155,19 @@ const onTick = JavaWrapper.methodToJava(() => {
     for (const [key, data] of ghostBlocks.entries()) {
         if (now > data.expires) {
             // Revert to Bedrock before deleting to ensure server state matches client state
-            if (data.currentState === "AIR" && setBlockMethod && rawBedrockState) {
-                try {
-                    const rawWorld = World.getRaw();
-                    const rawPos = PositionCommon.createBlockPos(data.pos.x, data.pos.y, data.pos.z).getRaw();
-                    Client.getMinecraft().execute(JavaWrapper.methodToJava(() => {
-                        try {
-                            setBlockMethod.invoke(rawWorld, rawPos, rawBedrockState, 19);
-                        }
-                        catch (e) { }
-                    }));
-                }
-                catch (e) { }
-            }
+            // if (data.currentState === "AIR" && setBlockMethod && rawBedrockState) {
+            //   try {
+            //     const rawWorld = World.getRaw();
+            //     const rawPos = PositionCommon.createBlockPos(data.pos.x, data.pos.y, data.pos.z).getRaw();
+            //     Client.getMinecraft().execute(
+            //       JavaWrapper.methodToJava(() => {
+            //         try {
+            //           setBlockMethod.invoke(rawWorld, rawPos, rawBedrockState, 19);
+            //         } catch (e) {}
+            //       }),
+            //     );
+            //   } catch (e) {}
+            // }
             ghostBlocks.delete(key);
         }
     }

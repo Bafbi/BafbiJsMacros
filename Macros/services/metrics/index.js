@@ -7,7 +7,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  */
 const debug_1 = require("../../utils/debug");
 const events_1 = require("../../utils/events");
-const logger = new debug_1.Logger("Metrics", debug_1.LogLevel.ERROR);
+const logger = new debug_1.Logger("Metrics", debug_1.LogLevel.WARN);
 const METRICS_CONFIG_FILE = "mining_metrics.json";
 const metrics_config = {
     target_block: "minecraft:stone",
@@ -161,7 +161,7 @@ metricsCmd.register();
 logger.info("Metrics Service initialized.");
 const metricsListeners = [
     JsMacros.on("Tick", onTick),
-    events_1.EventUtils.onCustom(events_1.EVENT_MINE_BLOCK, onMineBlock)
+    events_1.EventUtils.onCustom(events_1.EVENT_MINE_BLOCK, onMineBlock),
 ];
 event.stopListener = JavaWrapper.methodToJava(() => {
     logger.info("Stopping Metrics Service...");
